@@ -1,0 +1,22 @@
+[
+  {"id": 1, "input": "Rahul ko 5000 raw material ke liye diye", "expected": {"debit_account": "Purchases", "credit_account": "Cash", "amount": 5000}},
+  {"id": 2, "input": "Amit ne 3000 ka saamaan udhaar liya", "expected": {"debit_account": "Purchases", "credit_account": "Creditors", "amount": 3000}},
+  {"id": 3, "input": "Ramesh se 2000 aaye", "expected": {"debit_account": "Cash", "credit_account": "Debtors", "amount": 2000}},
+  {"id": 4, "input": "Ramesh ko 1500 kiraye ke liye diye", "expected": {"debit_account": "Rent", "credit_account": "Cash", "amount": 1500}},
+  {"id": 5, "input": "Bijli ka bill 800 diya", "expected": {"debit_account": "Electricity", "credit_account": "Cash", "amount": 800}},
+  {"id": 6, "input": "Mazdoor ko 2000 wages diye", "expected": {"debit_account": "Wages", "credit_account": "Cash", "amount": 2000}},
+  {"id": 7, "input": "Aaj 4500 ki cash sale ki", "expected": {"debit_account": "Cash", "credit_account": "Sales", "amount": 4500}},
+  {"id": 8, "input": "Sharma ji ko 7000 ka saamaan becha udhaar pe", "expected": {"debit_account": "Debtors", "credit_account": "Sales", "amount": 7000}},
+  {"id": 9, "input": "Paanch hazaar ka maal becha cash mein", "expected": {"debit_account": "Cash", "credit_account": "Sales", "amount": 5000}},
+  {"id": 10, "input": "Do hazaar bijli ka bill bhara", "expected": {"debit_account": "Electricity", "credit_account": "Cash", "amount": 2000}},
+  {"id": 11, "input": "Gupta se 6000 udhaar wapas mile", "expected": {"debit_account": "Cash", "credit_account": "Debtors", "amount": 6000}},
+  {"id": 12, "input": "Rent 12000 diya", "expected": {"debit_account": "Rent", "credit_account": "Cash", "amount": 12000}},
+  {"id": 13, "input": "Mohan ko 3500 raw material ke liye diye", "expected": {"debit_account": "Purchases", "credit_account": "Cash", "amount": 3500}},
+  {"id": 14, "input": "Aaj 8000 cash mein sale hui", "expected": {"debit_account": "Cash", "credit_account": "Sales", "amount": 8000}},
+  {"id": 15, "input": "Kumar ko 900 ka saman diye", "expected": {"debit_account": "Purchases", "credit_account": "Cash", "amount": 900}},
+  {"id": 16, "input": "Mazdooron ko 4000 pay kiya", "expected": {"debit_account": "Wages", "credit_account": "Cash", "amount": 4000}},
+  {"id": 17, "input": "Bijli ka bill 1200 diya", "expected": {"debit_account": "Electricity", "credit_account": "Cash", "amount": 1200}},
+  {"id": 18, "input": "Ravi nu 2500 de ditte, maal layi", "expected": {"debit_account": "Purchases", "credit_account": "Cash", "amount": 2500}},
+  {"id": 19, "input": "रमेश से 2000 रुपये मिले", "expected": {"debit_account": "Cash", "credit_account": "Debtors", "amount": 2000}},
+  {"id": 20, "input": "Ramesh ne 4000 ka saaman udhaar liya", "expected": {"debit_account": "Purchases", "credit_account": "Creditors", "amount": 4000}}
+]
