@@ -1,0 +1,43 @@
+// Labels for login, share-report and the voice/type toggle (merged into t() by i18n.js)
+export const EXTRA = {
+  en: {
+    login_title: 'Log in to VoxLedger', login_sub: 'Enter your mobile number. We will send a 6-digit OTP.',
+    login_phone: 'Mobile number', login_send: 'Send OTP', login_otp_title: 'Enter the OTP', login_otp_sub: 'We sent a 6-digit code to',
+    login_verify: 'Verify and continue', login_resend: 'Resend OTP', login_resend_in: 'Resend in', login_change: 'Change number',
+    login_bad_phone: 'Enter a valid 10-digit mobile number.', login_bad_otp: 'That OTP is not correct. Please try again.',
+    login_fail_send: 'Could not send the OTP. Check your internet and try again.', login_demo: 'Demo mode: use OTP 123456', logout: 'Log out',
+    share_report: '📤 Share report', share_title: 'Share report', share_whatsapp: 'WhatsApp', share_native: 'Share…', share_copy: 'Copy text',
+    share_csv: 'Download CSV', share_copied: 'Copied', share_ledger: 'Ledger report', share_daily: 'Daily summary', share_more: 'more entries, see the CSV',
+    mode_voice: '🎤 Voice', mode_text: '⌨ Type',
+  },
+  hi: {
+    login_title: 'VoxLedger में लॉग इन करें', login_sub: 'अपना मोबाइल नंबर डालें। हम 6 अंकों का OTP भेजेंगे।',
+    login_phone: 'मोबाइल नंबर', login_send: 'OTP भेजें', login_otp_title: 'OTP डालें', login_otp_sub: '6 अंकों का कोड भेजा गया:',
+    login_verify: 'जाँचें और आगे बढ़ें', login_resend: 'OTP दोबारा भेजें', login_resend_in: 'दोबारा भेजें', login_change: 'नंबर बदलें',
+    login_bad_phone: 'सही 10 अंकों का मोबाइल नंबर डालें।', login_bad_otp: 'OTP सही नहीं है। फिर कोशिश करें।',
+    login_fail_send: 'OTP नहीं भेज सके। इंटरनेट जाँचें और फिर कोशिश करें।', login_demo: 'डेमो मोड: OTP 123456 डालें', logout: 'लॉग आउट',
+    share_report: '📤 रिपोर्ट भेजें', share_title: 'रिपोर्ट भेजें', share_whatsapp: 'व्हाट्सऐप', share_native: 'शेयर…', share_copy: 'टेक्स्ट कॉपी करें',
+    share_csv: 'CSV डाउनलोड', share_copied: 'कॉपी हो गया', share_ledger: 'बही-खाता रिपोर्ट', share_daily: 'आज का सारांश', share_more: 'और एंट्रियाँ, CSV देखें',
+    mode_voice: '🎤 बोलकर', mode_text: '⌨ लिखकर',
+  },
+  pa: {
+    login_title: 'VoxLedger ਵਿੱਚ ਲਾਗ ਇਨ ਕਰੋ', login_sub: 'ਆਪਣਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਿਓ। ਅਸੀਂ 6 ਅੰਕਾਂ ਦਾ OTP ਭੇਜਾਂਗੇ।',
+    login_phone: 'ਮੋਬਾਈਲ ਨੰਬਰ', login_send: 'OTP ਭੇਜੋ', login_otp_title: 'OTP ਦਿਓ', login_otp_sub: '6 ਅੰਕਾਂ ਦਾ ਕੋਡ ਭੇਜਿਆ ਗਿਆ:',
+    login_verify: 'ਜਾਂਚੋ ਅਤੇ ਅੱਗੇ ਵਧੋ', login_resend: 'OTP ਦੁਬਾਰਾ ਭੇਜੋ', login_resend_in: 'ਦੁਬਾਰਾ ਭੇਜੋ', login_change: 'ਨੰਬਰ ਬਦਲੋ',
+    login_bad_phone: 'ਸਹੀ 10 ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਿਓ।', login_bad_otp: 'OTP ਸਹੀ ਨਹੀਂ ਹੈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
+    login_fail_send: 'OTP ਨਹੀਂ ਭੇਜ ਸਕੇ। ਇੰਟਰਨੈੱਟ ਜਾਂਚੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।', login_demo: 'ਡੈਮੋ ਮੋਡ: OTP 123456 ਦਿਓ', logout: 'ਲਾਗ ਆਊਟ',
+    share_report: '📤 ਰਿਪੋਰਟ ਭੇਜੋ', share_title: 'ਰਿਪੋਰਟ ਭੇਜੋ', share_whatsapp: 'ਵਟਸਐਪ', share_native: 'ਸ਼ੇਅਰ…', share_copy: 'ਟੈਕਸਟ ਕਾਪੀ ਕਰੋ',
+    share_csv: 'CSV ਡਾਊਨਲੋਡ', share_copied: 'ਕਾਪੀ ਹੋ ਗਿਆ', share_ledger: 'ਬਹੀ-ਖਾਤਾ ਰਿਪੋਰਟ', share_daily: 'ਅੱਜ ਦਾ ਸਾਰ', share_more: 'ਹੋਰ ਐਂਟਰੀਆਂ, CSV ਵੇਖੋ',
+    mode_voice: '🎤 ਬੋਲ ਕੇ', mode_text: '⌨ ਲਿਖ ਕੇ',
+  },
+  hing: {
+    login_title: 'VoxLedger mein login karein', login_sub: 'Apna mobile number daalein. Hum 6 ank ka OTP bhejenge.',
+    login_phone: 'Mobile number', login_send: 'OTP bhejein', login_otp_title: 'OTP daalein', login_otp_sub: '6 ank ka code bheja gaya:',
+    login_verify: 'Verify karke aage badhein', login_resend: 'OTP dobara bhejein', login_resend_in: 'Dobara bhejein', login_change: 'Number badlein',
+    login_bad_phone: 'Sahi 10 ank ka mobile number daalein.', login_bad_otp: 'OTP sahi nahi hai. Phir koshish karein.',
+    login_fail_send: 'OTP nahi bhej sake. Internet check karein aur phir koshish karein.', login_demo: 'Demo mode: OTP 123456 daalein', logout: 'Logout',
+    share_report: '📤 Report share karein', share_title: 'Report share karein', share_whatsapp: 'WhatsApp', share_native: 'Share…', share_copy: 'Text copy karein',
+    share_csv: 'CSV download', share_copied: 'Copy ho gaya', share_ledger: 'Khata report', share_daily: 'Aaj ka summary', share_more: 'aur entries, CSV dekhein',
+    mode_voice: '🎤 Bolkar', mode_text: '⌨ Likhkar',
+  },
+};

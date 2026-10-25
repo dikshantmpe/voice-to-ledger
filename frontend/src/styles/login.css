@@ -1,0 +1,79 @@
+/* ---------- login (OTP) ---------- */
+.lp{min-height:100vh;display:grid;grid-template-columns:1.05fr 1fr;background:var(--bg,#F3F7FD)}
+.lp-hero{position:relative;overflow:hidden;color:#fff;padding:2rem 2.4rem;display:flex;flex-direction:column;justify-content:space-between;gap:1.6rem;background:linear-gradient(155deg,#0B1B4B 0%,#12338F 55%,#1E6FF1 100%)}
+.lp-rings{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lp-rings circle{fill:none;stroke:rgba(255,255,255,.12);stroke-width:1.5}
+.lp-toprow{position:relative;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.lp-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.25rem}
+.lp-copy{position:relative}
+.lp-copy h2{font-size:clamp(1.9rem,3.4vw,3rem);line-height:1.1;font-weight:800;margin:0 0 .8rem}
+.lp-copy h2 span{color:var(--gold,#F5B301)}
+.lp-sub{max-width:34rem;color:#C9D8F8;font-size:1.02rem;line-height:1.55;margin:0 0 1.4rem}
+.lp-points{list-style:none;padding:0;margin:0;display:grid;gap:.7rem}
+.lp-points li{display:flex;align-items:center;gap:.7rem;font-weight:700}
+.lp-points i{font-style:normal;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:.8rem;flex:none}
+.lp-demo-art{position:relative;display:grid;gap:.8rem;max-width:25rem}
+.lp-wave{display:flex;align-items:center;gap:4px;height:54px}
+.lp-wave span{flex:1;height:100%;border-radius:4px;background:linear-gradient(#5AA9FF,#fff);transform-origin:center;animation:lpbar 1.2s ease-in-out infinite}
+@keyframes lpbar{0%,100%{transform:scaleY(.18)}50%{transform:scaleY(1)}}
+.lp-bubble{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:.7rem 1rem;font-size:.92rem;backdrop-filter:blur(6px)}
+.lp-bubble b{display:block;margin-top:.15rem;color:var(--gold,#F5B301)}
+
+.lp-formside{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.2rem;gap:1rem}
+.lp-card{width:100%;max-width:430px;background:var(--card,#fff);color:var(--text,#0B1B4B);border:1px solid var(--line,#E3EAF5);border-radius:24px;padding:2rem 1.7rem;box-shadow:0 24px 60px rgba(11,27,75,.14)}
+.lp-steps{display:flex;gap:.4rem;margin-bottom:1.2rem}
+.lp-steps span{flex:1;height:5px;border-radius:99px;background:var(--line,#E3EAF5)}
+.lp-steps span.on{background:#1E6FF1}
+.lp-icon{width:56px;height:56px;border-radius:18px;background:#E8F0FF;color:#1E6FF1;display:grid;place-items:center;margin-bottom:1rem}
+.lp-card h1{margin:0 0 .35rem;font-size:1.6rem}
+.lp-lead{margin:0 0 1.2rem;color:var(--muted,#5B6B8C);line-height:1.5}
+.lp-lead b{color:var(--text,#0B1B4B)}
+.lp-label{display:block;font-size:.78rem;font-weight:800;color:var(--muted,#5B6B8C);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
+.lp-phone{display:flex;align-items:center;gap:.7rem;border:1.8px solid var(--line,#E3EAF5);border-radius:14px;padding:0 .9rem;background:var(--bg,#F3F7FD);transition:border-color .15s,box-shadow .15s}
+.lp-phone:focus-within{border-color:#1E6FF1;box-shadow:0 0 0 4px rgba(30,111,241,.14)}
+.lp-cc{font-weight:800;white-space:nowrap;padding-right:.7rem;border-right:1.5px solid var(--line,#E3EAF5)}
+.lp-phone input{border:0;background:transparent;font-size:1.25rem;font-weight:800;letter-spacing:1.5px;padding:.9rem 0;flex:1;outline:none;min-width:0;color:inherit}
+.lp-btn{width:100%;margin-top:1.2rem;padding:.95rem 1rem;border-radius:14px;font-weight:800;font-size:1.02rem;color:#fff;background:linear-gradient(135deg,#1E6FF1,#0B4BC9);box-shadow:0 10px 22px rgba(30,111,241,.32);transition:transform .1s,opacity .15s}
+.lp-btn:hover:not(:disabled){transform:translateY(-1px)}
+.lp-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.lp-links{display:flex;justify-content:space-between;gap:.6rem;margin-top:1rem}
+.lp-links button{font-weight:700;font-size:.88rem;color:#1E6FF1;padding:.4rem .2rem}
+.lp-links button:disabled{color:var(--muted,#5B6B8C);cursor:default}
+.lp-demo{display:inline-block;margin-top:.8rem;background:#FFF1D6;color:#7A4B00;border-radius:999px;padding:.3rem .8rem;font-size:.8rem;font-weight:800}
+.lp-foot{margin:0;color:var(--muted,#5B6B8C);font-size:.82rem;font-weight:600}
+
+.otpbox{display:grid;grid-template-columns:repeat(6,1fr);gap:.55rem;margin-top:.4rem}
+.otpbox input{width:100%;text-align:center;font-size:1.6rem;font-weight:800;padding:.75rem 0;border:1.8px solid var(--line,#E3EAF5);border-radius:14px;background:var(--bg,#F3F7FD);color:inherit;transition:border-color .15s,box-shadow .15s}
+.otpbox input:focus{border-color:#1E6FF1;box-shadow:0 0 0 4px rgba(30,111,241,.14);outline:none}
+.loginerr{margin-top:.8rem;background:#FDECEC;color:#B3261E;border-radius:12px;padding:.55rem .8rem;font-weight:700;font-size:.88rem}
+
+/* phones and small tablets: brand panel becomes a compact header */
+@media (max-width:900px){
+  .lp{grid-template-columns:1fr}
+  .lp-hero{padding:1.2rem 1.2rem 1.6rem;gap:1rem}
+  .lp-copy h2{font-size:1.7rem;margin-bottom:.4rem}
+  .lp-sub,.lp-points,.lp-demo-art{display:none}
+  .lp-formside{padding:0 1rem 2rem;margin-top:-1.2rem}
+  .lp-card{padding:1.5rem 1.2rem}
+}
+
+/* ---------- share report ---------- */
+.sharegrid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:.8rem 0}
+.sharegrid button{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.9rem .4rem;border-radius:16px;font-weight:800;background:var(--bg);border:1.5px solid var(--line)}
+.sharegrid .sico{font-size:1.6rem}
+.sharepre{white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:.7rem;max-height:200px;overflow:auto}
+
+/* ---------- voice / type toggle ---------- */
+.modetoggle{display:flex;gap:.4rem;margin:.2rem 0 1rem}
+.modetoggle button{flex:1;padding:.7rem;border-radius:14px;font-weight:800;background:var(--card);border:1.5px solid var(--line)}
+.modetoggle button.on{background:#1E6FF1;color:#fff;border-color:#1E6FF1}
+/* ---------- bigger logo on the login page ---------- */
+.lp-brand{gap:1rem;font-size:1.9rem;letter-spacing:.3px}
+.lp-brand .logo{
+  width:84px;height:84px;border-radius:22px;
+  box-shadow:0 0 0 3px rgba(255,255,255,.28),0 14px 30px rgba(0,0,0,.3);
+}
+@media (max-width:900px){
+  .lp-brand{gap:.8rem;font-size:1.5rem}
+  .lp-brand .logo{width:60px;height:60px;border-radius:16px}
+}

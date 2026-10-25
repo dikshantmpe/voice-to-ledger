@@ -1,0 +1,6 @@
+{
+  "appId": "com.voxledger.app",
+  "appName": "VoxLedger",
+  "webDir": "out",
+  "server": { "androidScheme": "https" }
+}
