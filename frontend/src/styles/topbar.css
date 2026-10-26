@@ -1,0 +1,23 @@
+/* ---------- Top bar ---------- */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:.6rem;padding:.55rem 1rem;background:var(--green);color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:center;gap:.5rem;font-weight:800;font-size:1.1rem;letter-spacing:.2px;white-space:nowrap}
+.brand .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--gold),#f0bc5a);display:grid;place-items:center;font-size:1rem}
+.mainnav{display:flex;gap:.15rem;margin-left:.5rem;flex:1}
+.mainnav button{color:#cfe6d6;padding:.45rem .8rem;border-radius:10px;font-weight:600;font-size:.92rem;position:relative;display:flex;align-items:center;gap:.35rem}
+.mainnav button:hover{background:rgba(255,255,255,.12);color:#fff}
+.mainnav button.active{background:rgba(255,255,255,.18);color:#fff}
+.badge{background:var(--gold);color:#0B1B4B;font-size:.7rem;font-weight:800;border-radius:999px;padding:.05rem .42rem;min-width:1.15rem;text-align:center}
+.langswitch{display:flex;border:1px solid rgba(255,255,255,.35);border-radius:999px;overflow:hidden}
+.langswitch button{color:#cfe6d6;font-size:.78rem;padding:.28rem .55rem;font-weight:700}
+.langswitch button.on{background:#fff;color:var(--green)}
+.avatar{position:relative}
+.avatar .btn{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#0B1B4B;font-weight:800;display:grid;place-items:center;font-size:.95rem}
+.menuwrap{position:relative}
+.iconbtn{color:#fff;padding:.45rem;border-radius:10px;display:grid;place-items:center}
+.iconbtn:hover{background:rgba(255,255,255,.12)}
+.dropdown{position:absolute;right:0;top:calc(100% + 8px);background:var(--card);color:var(--text);border-radius:14px;box-shadow:var(--shadow-lg);min-width:210px;padding:.4rem;display:none;border:1px solid var(--line)}
+.dropdown.open{display:block}
+.dropdown button,.dropdown .dd-item{display:flex;width:100%;align-items:center;gap:.6rem;padding:.6rem .7rem;border-radius:10px;font-size:.92rem;font-weight:600;text-align:left}
+.dropdown button:hover{background:var(--bg)}
+.dropdown hr{border:none;border-top:1px solid var(--line);margin:.35rem 0}
+

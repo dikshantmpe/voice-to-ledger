@@ -1,0 +1,19 @@
+/* ---------- VoxLedger blue theme ---------- */
+:root{--logo:url("/logo.jpg")}
+body{background-image:none;font-family:Manrope,system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari","Noto Sans Gurmukhi",sans-serif}
+h1,h2,h3{letter-spacing:-.3px}
+.logo{display:inline-block;width:34px;height:34px;border-radius:10px;background:var(--logo) center/cover no-repeat;flex:none}
+.brand{font-weight:800;font-size:1.15rem;gap:.55rem}
+.gone{display:none!important}
+a.btn{text-decoration:none}
+.btn{border-radius:999px;padding:.62rem 1.3rem;box-shadow:0 6px 16px rgba(30,111,241,.25)}
+.btn.sm{border-radius:999px;padding:.35rem .85rem}
+.btn.soft{box-shadow:none}
+.card{border-radius:20px}
+.entry{border-radius:18px}
+.btn.big{padding:.85rem 1.6rem;font-size:1rem}
+.btn.ghost{background:#fff;color:#1E6FF1;border:1.5px solid #1E6FF1;box-shadow:none}
+.btn.ghost:hover{background:#EAF3FF;color:#1E6FF1}
+.btn.light{background:#fff;color:#0B1B4B;box-shadow:none}
+.btn.light:hover{background:#EAF3FF}
+
