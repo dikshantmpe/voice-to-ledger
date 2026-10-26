@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from app.db import engine
-from app.routers import entries, ledger
+from app.routers import entries, ledger,parse,voice
 
 if os.getenv("SENTRY_DSN"):
     sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), traces_sample_rate=0.0)
@@ -25,3 +25,5 @@ def health():
 
 app.include_router(entries.router)
 app.include_router(ledger.router)
+app.include_router(parse.router)
+app.include_router(voice.router)    
