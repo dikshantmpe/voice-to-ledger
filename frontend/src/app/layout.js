@@ -8,6 +8,7 @@ import '@/styles/review.css';
 import '@/styles/assistant.css';
 import '@/styles/login.css';
 import '@/styles/home.css';
+import '@/styles/parties.css';
 
 const manrope = Manrope({ subsets: ['latin'], weight: ['500', '700', '800'], display: 'swap' });
 

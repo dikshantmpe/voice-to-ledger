@@ -6,6 +6,7 @@ export const VIEWS = [
   ['record', '◉', 'nav_record'],
   ['review', '▤', 'nav_review'],
   ['ledger', '≣', 'nav_ledger'],
+  ['parties', '◈', 'nav_parties'],
 ];
 
 export default function NavButtons({ view, setView }) {

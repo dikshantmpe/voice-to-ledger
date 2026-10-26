@@ -9,6 +9,7 @@ import HomeView from '@/components/home/HomeView';
 import RecordView from '@/components/record/RecordView';
 import ReviewView from '@/components/review/ReviewView';
 import LedgerView from '@/components/ledger/LedgerView';
+import PartiesView from '@/components/parties/PartiesView';
 import AssistantMode from '@/components/assistant/AssistantMode';
 import DailySummary from '@/components/summary/DailySummary';
 import Toast from '@/components/ui/Toast';
@@ -28,6 +29,7 @@ function Shell() {
         {view === 'record' && <RecordView goReview={() => setView('review')} />}
         {view === 'review' && <ReviewView goRecord={() => setView('record')} />}
         {view === 'ledger' && <LedgerView />}
+        {view === 'parties' && <PartiesView />}
       </main>
 
       <DailySummary open={showSummary} onClose={() => setShowSummary(false)} />

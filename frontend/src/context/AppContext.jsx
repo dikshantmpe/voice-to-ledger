@@ -77,6 +77,14 @@ export function AppProvider({ children }) {
     return n;
   };
 
+  // add a customer / supplier (returns false if the name is empty or already exists)
+  const addParty = (n, type, open) => {
+    const name = (n || '').trim();
+    if (!name || S.parties.some((p) => p.n.toLowerCase() === name.toLowerCase())) return false;
+    setS((s) => ({ ...s, parties: [...s.parties, { n: name, t: type, open: +open || 0 }] }));
+    return true;
+  };
+
   const pending = S ? S.entries.filter((e) => e.status === 'pending') : [];
 
   // numbers for the daily-summary icon
@@ -95,7 +103,7 @@ export function AppProvider({ children }) {
 
   if (!S) return null;
   return (
-    <Ctx.Provider value={{ S, lang, t, speechLang, setLang, setVoiceLang, addEntry, approve, reject, restore, updateEntry, bulkApproveClean, pending, summary, toast, toastMsg }}>
+    <Ctx.Provider value={{ S, lang, t, speechLang, setLang, setVoiceLang, addEntry, approve, reject, restore, updateEntry, bulkApproveClean, addParty, pending, summary, toast, toastMsg }}>
       {children}
     </Ctx.Provider>
   );
