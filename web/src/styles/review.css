@@ -1,0 +1,30 @@
+/* review tabs, approve / reject / trail */
+.rtabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 1rem}
+.rtabs button{padding:.45rem .95rem;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:800;font-size:.85rem;color:var(--muted)}
+.rtabs button:hover{border-color:var(--green2);color:var(--green2)}
+.rtabs button.on{background:var(--green2);border-color:var(--green2);color:#fff}
+.rtabs b{margin-left:.4rem;background:rgba(127,127,127,.2);border-radius:999px;padding:0 .45rem;font-size:.75rem}
+.entry.done{border-left-color:var(--green2)}
+.entry.rej{border-left-color:var(--red)}
+.chk{display:flex;gap:.6rem;align-items:center;background:#EAF3FF;color:#0B3D91;border-radius:12px;padding:.6rem .8rem;font-weight:700;font-size:.88rem;margin:.6rem 0}
+.chk.bad{background:#FDE8E8;color:#B3252A}
+[data-theme="dark"] .chk{background:#132C5C;color:#BFD8FF}
+[data-theme="dark"] .chk.bad{background:#4A1B22;color:#FFB4B8}
+.reasons{display:flex;flex-wrap:wrap;gap:.45rem;margin:.6rem 0 .9rem}
+.reasons button{padding:.4rem .8rem;border-radius:999px;border:1px solid var(--line);font-size:.84rem;font-weight:700;color:var(--muted)}
+.reasons button:hover{border-color:var(--red);color:var(--red)}
+.reasons button.on{background:var(--red);border-color:var(--red);color:#fff}
+.tl{list-style:none;border-left:2px solid var(--line);margin:.6rem 0 0 .5rem;padding-left:1.1rem}
+.tl li{position:relative;padding:.3rem 0 .85rem}
+.tl li::before{content:"";position:absolute;left:-1.55rem;top:.5rem;width:12px;height:12px;border-radius:50%;background:var(--green2);border:2px solid var(--card)}
+.tl li.r::before{background:var(--red)}
+.diff{width:100%;font-size:.86rem}
+.diff .o{color:var(--red);text-decoration:line-through}
+.diff .n{color:var(--green2);font-weight:700}
+.tag.ap{background:#E3EFFF;color:#0B1B4B}
+.tag.ed{background:#FFF1D6;color:#8A5A00}
+.tag.rj{background:#FDE8E8;color:#B3252A}
+.tag.lg{background:#E6F7FF;color:#0B6E99}
+
+.hl{background:#FFF1D6;border-radius:8px;padding:.1rem .45rem;outline:1px dashed #E0A100}
+.narr{margin:.1rem 0 .5rem}
