@@ -1,5 +1,7 @@
 import json
+import logging
 import os
+import re
 from datetime import date
 import httpx
 from fastapi import APIRouter, HTTPException
@@ -7,6 +9,7 @@ from pydantic import BaseModel, ValidationError
 from app.models.parsed import ParsedEntry
 from app.services.prompt import ACCOUNTS, system_prompt
 
+log = logging.getLogger("uvicorn.error")
 router = APIRouter(tags=["parse"])
 
 class ParseIn(BaseModel):
@@ -25,10 +28,16 @@ def parse(body: ParseIn):
             raw_utterance=body.text, confidence=0.9, needs_review=False,
         )
 
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_key:
+        # Fail loudly and clearly: without this the request would go to Google
+        # with key=None and come back as an opaque 502.
+        raise HTTPException(503, "GEMINI_API_KEY not configured on the server")
+
     try:
         resp = httpx.post(
             f"https://generativelanguage.googleapis.com/v1beta/models/{os.getenv('GEMINI_MODEL', 'gemini-2.0-flash')}:generateContent",
-            params={"key": os.getenv("GEMINI_API_KEY")},
+            params={"key": gemini_key},
             json={
                 "systemInstruction": {"parts": [{"text": system_prompt()}]},
                 "contents": [{"role": "user", "parts": [{"text": body.text}]}],
@@ -38,11 +47,16 @@ def parse(body: ParseIn):
         )
         resp.raise_for_status()
         text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+        # Gemini can wrap JSON in ```json fences even with responseMimeType set
+        text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
         data = json.loads(text)
     except json.JSONDecodeError:
+        log.error("parse: LLM returned non-JSON: %r", text[:300])
         raise HTTPException(422, "Could not understand, please say it again")
+    except HTTPException:
+        raise
     except Exception as e:
-        print("LLM ERROR:", repr(e))
+        log.error("parse: LLM call failed: %r", e)
         raise HTTPException(502, "Extraction service unavailable")
 
     try:

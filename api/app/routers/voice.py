@@ -1,9 +1,11 @@
+import logging
 import os
 import httpx
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
+log = logging.getLogger("uvicorn.error")
 router = APIRouter(tags=["voice"])
 
 SARVAM_STT_URL = "https://api.sarvam.ai/speech-to-text"
@@ -13,7 +15,9 @@ SUPPORTED_LANGUAGES = {"hi-IN", "pa-IN", "en-IN"}
 async def voice(
     audio: UploadFile = File(...),
     language: str = Form("hi-IN"),
+    lang: str | None = Form(None),  # older clients send "lang"; prefer it when present
 ):
+    language = lang or language
     # Hinglish frontend se "hi-IN" bhejega
     if language not in SUPPORTED_LANGUAGES:
         raise HTTPException(422, f"unsupported language: {language}")
@@ -38,7 +42,7 @@ async def voice(
         resp.raise_for_status()
         text = resp.json().get("transcript", "")
     except Exception as e:
-        print("VOICE ERROR:", repr(e)[:200])
+        log.error("voice: STT call failed: %r", e)
         raise HTTPException(502, "Speech service unavailable")
 
     if not text.strip():

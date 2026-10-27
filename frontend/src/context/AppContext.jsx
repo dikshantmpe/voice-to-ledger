@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { seed } from '@/lib/seed';
 import { parseEntry } from '@/lib/parser';
+import { api, toUi, fromParsed, accountsFor } from '@/lib/api';
 import { makeT, speechLangOf } from '@/lib/i18n';
 import { todayISO } from '@/lib/format';
 
@@ -13,16 +14,7 @@ export function AppProvider({ children }) {
   const [S, setS] = useState(null);
   const [toastMsg, setToast] = useState('');
 
-  // Helper for API headers (Update this based on your auth method)
-  const getHeaders = () => {
-    // const token = localStorage.getItem('token'); 
-    return {
-      'Content-Type': 'application/json',
-      // 'Authorization': `Bearer ${token}` 
-    };
-  };
-
-  // 1. Load initial state (parties/lang) from local storage, then fetch real entries from API
+  // 1. Load initial state (parties/lang) from local storage, then fetch real entries from the API
   useEffect(() => {
     let data = null;
     try { data = JSON.parse(localStorage.getItem(LS)); } catch (e) {}
@@ -31,18 +23,16 @@ export function AppProvider({ children }) {
 
     async function fetchEntries() {
       try {
-        const res = await fetch('/entries', { headers: getHeaders() });
-        if (res.ok) {
-          const entries = await res.json();
-          // Map backend fields to frontend format if necessary, or use directly
-          setS(prev => ({ 
-            ...prev, 
-            entries: entries,
-            nextId: entries.length > 0 ? Math.max(...entries.map(e => e.id)) + 1 : prev.nextId
-          }));
-        }
+        const entries = await api.listEntries(); // backend EntryOut[]
+        const ids = entries.map((e) => e.id);
+        setS((prev) => ({
+          ...prev,
+          entries: entries.map(toUi), // convert to the UI shape all components expect
+          nextId: ids.length > 0 ? Math.max(...ids) + 1 : prev.nextId,
+        }));
       } catch (err) {
-        console.error("Failed to load entries from API", err);
+        // offline / backend down -> keep the local (seeded) entries
+        console.error('Failed to load entries from API', err);
       }
     }
     fetchEntries();
@@ -51,7 +41,7 @@ export function AppProvider({ children }) {
   // Save non-entry state (like parties and language) to local storage
   useEffect(() => {
     if (S) {
-      const stateToSave = { ...S, entries: [] }; // Don't cache entries locally anymore
+      const stateToSave = { ...S, entries: [] }; // entries live on the server
       localStorage.setItem(LS, JSON.stringify(stateToSave));
     }
   }, [S?.parties, S?.lang, S?.voiceLang]);
@@ -70,119 +60,105 @@ export function AppProvider({ children }) {
   const setLang = (l) => setS((s) => ({ ...s, lang: l }));
   const setVoiceLang = (v) => setS((s) => ({ ...s, voiceLang: v }));
 
-  // 2. Add entry via POST API
+  // 2. Add entry: backend Gemini extraction first, local parser as fallback.
+  //    If the server is unreachable the entry is kept in local state (offline mode).
   const addEntry = async (text) => {
-    const p = parseEntry(text, S.parties);
-    const payload = {
-      entry_date: p.date || todayISO(),
-      party: p.party || null,
-      debit_account: p.dir === 'in' ? 'Cash' : (p.nature || 'Purchases'),
-      credit_account: p.dir === 'in' ? (p.nature || 'Sales') : 'Cash',
-      amount: p.amount || 0,
-      narration: text,
-      raw_utterance: text,
-      confidence: p.conf,
-      needs_review: (p.flags && p.flags.length > 0) ? true : false
-    };
+    let payload = null;
 
+    // a) core flow: backend /parse (multilingual NLU)
     try {
-      const res = await fetch('/entries', {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        const savedEntry = await res.json();
-        setS((s) => ({ ...s, entries: [savedEntry, ...s.entries], nextId: s.nextId + 1 }));
-        return savedEntry;
-      } else {
-        toast('Failed to save entry to database');
-      }
+      const parsed = await api.parse(text);
+      payload = fromParsed(parsed, text);
     } catch (e) {
-      toast('Network error saving entry');
+      // b) fallback: local rule-based parser (works offline)
+      const p = parseEntry(text, S.parties);
+      const acc = p.dir ? accountsFor(p.dir, p.nature) : null;
+      payload = {
+        entry_date: p.date || todayISO(),
+        party: p.party || null,
+        debit_account: acc ? acc.debit_account : 'Cash',
+        credit_account: acc ? acc.credit_account : 'Sales',
+        amount: p.amount ?? null,
+        narration: text,
+        raw_utterance: text,
+        confidence: p.conf,
+        needs_review: !!(p.flags && p.flags.length > 0),
+      };
+    }
+
+    // c) post the draft to the backend
+    try {
+      const saved = await api.createEntry(payload);
+      const ui = toUi(saved);
+      setS((s) => ({ ...s, entries: [ui, ...s.entries], nextId: Math.max(s.nextId, saved.id + 1) }));
+      return ui;
+    } catch (e) {
+      // d) fully offline: keep the draft locally so nothing is lost
+      const local = toUi({ ...payload, id: S.nextId, status: 'pending' });
+      setS((s) => ({ ...s, entries: [local, ...s.entries], nextId: s.nextId + 1 }));
+      toast(e?.message || 'Offline: entry kept on this device');
+      return local;
     }
   };
 
-  // 3. Approve entry via POST API
+  // 3. Approve entry via API
   const approve = async (id) => {
     try {
-      const res = await fetch(`/entries/${id}/approve`, { 
-        method: 'POST',
-        headers: getHeaders()
-      });
-      if (res.ok) {
-        const updated = await res.json();
-        setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === id ? updated : e)) }));
-      } else {
-        const err = await res.json();
-        toast(`Error approving: ${err.detail || 'Validation failed'}`);
-      }
+      const updated = await api.approve(id);
+      setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === id ? toUi(updated) : e)) }));
     } catch (e) {
-      toast('Network error approving entry');
+      toast(e?.message || 'Error approving entry');
     }
   };
 
-  // 4. Reject entry via POST API
+  // 4. Reject entry via API
   const reject = async (id) => {
     try {
-      const res = await fetch(`/entries/${id}/reject`, { 
-        method: 'POST',
-        headers: getHeaders()
-      });
-      if (res.ok) {
-        const updated = await res.json();
-        setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === id ? updated : e)) }));
-      }
+      const updated = await api.reject(id);
+      setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === id ? toUi(updated) : e)) }));
     } catch (e) {
-      toast('Network error rejecting entry');
+      toast(e?.message || 'Network error rejecting entry');
     }
   };
 
   const restore = (id) => {
-    // Note: Your backend entries.py doesn't have a /restore endpoint.
-    // If needed, you should create a POST /entries/{id}/restore in FastAPI.
-    // For now, this just updates local UI state.
+    // No /restore endpoint on the backend yet; local-only until then.
     setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === id ? { ...e, status: 'pending' } : e)) }));
   };
 
-  // 5. Update entry via PATCH API
+  // 5. Update entry via PATCH (dir/nature changes recompute the debit/credit sides)
   const updateEntry = async (id, patch) => {
-    const backendPatch = {
-      amount: patch.amount,
-      party: patch.party,
-      narration: patch.narration,
-      entry_date: patch.date
-    };
+    const body = {};
+    if (patch.date) body.entry_date = patch.date;
+    if (patch.party !== undefined) body.party = patch.party;
+    if (patch.narration !== undefined) body.narration = patch.narration;
+    if (patch.amount !== undefined) body.amount = patch.amount;
+    if (patch.dir) {
+      const nature = patch.nature || (S.entries.find((e) => e.id === id) || {}).nature;
+      const acc = accountsFor(patch.dir, nature);
+      body.debit_account = acc.debit_account;
+      body.credit_account = acc.credit_account;
+    }
 
     try {
-      const res = await fetch(`/entries/${id}`, {
-        method: 'PATCH',
-        headers: getHeaders(),
-        body: JSON.stringify(backendPatch)
-      });
-      if (res.ok) {
-        const updated = await res.json();
-        setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === id ? updated : e)) }));
-      } else {
-        toast('Failed to update entry');
-      }
+      const updated = await api.patchEntry(id, body);
+      setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === id ? toUi(updated) : e)) }));
     } catch (e) {
-      toast('Network error updating entry');
+      toast(e?.message || 'Failed to update entry');
     }
   };
 
   const bulkApproveClean = async () => {
-    const pendingClean = S.entries.filter((e) => e.status === 'pending' && !e.needs_review && (e.confidence >= 0.75 || e.confidence === null));
+    const pendingClean = S.entries.filter((e) => e.status === 'pending' && !e.needs_review && (e.conf == null || e.conf >= 0.75));
     let approvedCount = 0;
-    
-    // Process approvals sequentially to avoid overwhelming the database/API
+
+    // Sequential to avoid hammering the API
     for (const entry of pendingClean) {
-      const res = await fetch(`/entries/${entry.id}/approve`, { method: 'POST', headers: getHeaders() });
-      if (res.ok) {
-        const updated = await res.json();
-        setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === entry.id ? updated : e)) }));
+      try {
+        const updated = await api.approve(entry.id);
+        setS((s) => ({ ...s, entries: s.entries.map((e) => (e.id === entry.id ? toUi(updated) : e)) }));
         approvedCount++;
-      }
+      } catch (e) { /* keep going */ }
     }
     if (approvedCount > 0) toast(`Bulk approved ${approvedCount} entries`);
     return approvedCount;
@@ -200,25 +176,17 @@ export function AppProvider({ children }) {
   const summary = useMemo(() => {
     if (!S) return null;
     const d = todayISO();
-    const today = S.entries.filter((e) => e.status === 'approved' && e.entry_date === d);
-    // Adjusted logic to use API's debit_account/credit_account structure
-    const inAmt = today.filter((e) => e.debit_account === 'Cash').reduce((a, e) => a + Number(e.amount || 0), 0);
-    const outAmt = today.filter((e) => e.credit_account === 'Cash').reduce((a, e) => a + Number(e.amount || 0), 0);
-    
-    let dr = 0, cr = 0;
-    S.entries.filter((e) => e.status === 'approved').forEach((e) => {
-      dr += Number(e.amount || 0); 
-      cr += Number(e.amount || 0);
-    });
-    
+    const today = S.entries.filter((e) => e.status === 'approved' && e.date === d);
+    const inAmt = today.filter((e) => e.dir === 'in').reduce((a, e) => a + Number(e.amount || 0), 0);
+    const outAmt = today.filter((e) => e.dir === 'out').reduce((a, e) => a + Number(e.amount || 0), 0);
+
     const allApproved = S.entries.filter((e) => e.status === 'approved');
     const cashNet = allApproved.reduce((a, e) => {
-      if (e.debit_account === 'Cash') return a + Number(e.amount || 0);
-      if (e.credit_account === 'Cash') return a - Number(e.amount || 0);
-      return a;
+      if (e.dir === 'in') return a + Number(e.amount || 0);
+      return a - Number(e.amount || 0);
     }, 0);
-    
-    return { inAmt, outAmt, net: inAmt - outAmt, count: today.length, pending: pending.length, cash: (S.biz?.cash || 0) + cashNet, dr, cr };
+
+    return { inAmt, outAmt, net: inAmt - outAmt, count: today.length, pending: pending.length, cash: (S.biz?.cash || 0) + cashNet, dr: inAmt, cr: outAmt };
   }, [S, pending.length]);
 
   if (!S) return null;

@@ -8,7 +8,7 @@ export async function transcribeViaApi(blob, lang) {
   if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE not set');
   const fd = new FormData();
   fd.append('audio', blob, 'clip.webm');
-  fd.append('lang', lang); // e.g. hi-IN, pa-IN, en-IN
+  fd.append('language', lang); // backend Form field is "language" (e.g. hi-IN, pa-IN, en-IN)
   const r = await fetch(`${API_BASE}/voice`, { method: 'POST', body: fd });
   if (!r.ok) throw new Error('voice api ' + r.status);
   const j = await r.json();
