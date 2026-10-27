@@ -5,6 +5,7 @@ import { parseEntry } from '@/lib/parser';
 import { api, toUi, fromParsed, accountsFor } from '@/lib/api';
 import { makeT, speechLangOf } from '@/lib/i18n';
 import { todayISO } from '@/lib/format';
+import TopBar, { BottomNav } from '@/components/topbar/TopBar';
 
 const LS = 'voxledger_next_v2';
 const Ctx = createContext(null);

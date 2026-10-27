@@ -12,6 +12,7 @@ export const VIEWS = [
   ['review', '▤', 'nav_review'],
   ['ledger', '≣', 'nav_ledger'],
   ['parties', '◈', 'nav_parties'],
+  ['reports', '▦', 'nav_reports'],
 ];
 
 // ---- top nav row (was NavButtons.jsx) ----
