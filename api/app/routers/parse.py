@@ -15,12 +15,14 @@ router = APIRouter(tags=["parse"])
 class ParseIn(BaseModel):
     text: str
 
+# Try these in order; first one that exists on your key wins.
+GEMINI_CANDIDATES = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-flash-latest", "gemini-1.5-flash"]
+
 @router.post("/parse", response_model=ParsedEntry)
 def parse(body: ParseIn):
     if not body.text.strip():
         raise HTTPException(422, "text is empty")
 
-    # Mock mode: PARSE_MOCK=1 in .env returns a fixed sample, no LLM call
     if os.getenv("PARSE_MOCK") == "1":
         return ParsedEntry(
             entry_date=date.today(), party="Rahul", debit_account="Purchases",
@@ -28,37 +30,48 @@ def parse(body: ParseIn):
             raw_utterance=body.text, confidence=0.9, needs_review=False,
         )
 
-    xai_key = os.getenv("XAI_API_KEY")
-    if not xai_key:
-        raise HTTPException(503, "XAI_API_KEY not configured on the server")
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_key:
+        raise HTTPException(503, "GEMINI_API_KEY not configured on the server")
 
-    try:
-        resp = httpx.post(
-            "https://api.x.ai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {xai_key}"},
-            json={
-                "model": os.getenv("XAI_MODEL", "grok-beta"),
-                "messages": [
-                    {"role": "system", "content": system_prompt()},
-                    {"role": "user", "content": body.text},
-                ],
-                "response_format": {"type": "json_object"},
-                "temperature": 0,
-            },
-            timeout=60,
-        )
-        resp.raise_for_status()
-        text = resp.json()["choices"][0]["message"]["content"]
-        # Grok can wrap JSON in ```json fences even with response_format set
-        text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
-        data = json.loads(text)
-    except json.JSONDecodeError:
-        log.error("parse: LLM returned non-JSON: %r", text[:300])
-        raise HTTPException(422, "Could not understand, please say it again")
-    except HTTPException:
-        raise
-    except Exception as e:
-        log.error("parse: LLM call failed: %r", e)
+    chosen = os.getenv("GEMINI_MODEL")
+    models_to_try = [chosen] if chosen else GEMINI_CANDIDATES
+
+    last_err = None
+    text = None
+    for model in models_to_try:
+        if not model:
+            continue
+        try:
+            resp = httpx.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                params={"key": gemini_key},
+                json={
+                    "systemInstruction": {"parts": [{"text": system_prompt()}]},
+                    "contents": [{"role": "user", "parts": [{"text": body.text}]}],
+                    "generationConfig": {"responseMimeType": "application/json", "temperature": 0},
+                },
+                timeout=60,
+            )
+            if resp.status_code == 404:
+                last_err = f"model {model} not found"
+                continue
+            resp.raise_for_status()
+            text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+            text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
+            data = json.loads(text)
+            break
+        except json.JSONDecodeError:
+            log.error("parse: LLM returned non-JSON: %r", text[:300] if text else None)
+            raise HTTPException(422, "Could not understand, please say it again")
+        except HTTPException:
+            raise
+        except Exception as e:
+            last_err = str(e)
+            log.error("parse: model %s failed: %r", model, e)
+            continue
+    else:
+        log.error("parse: all models failed. last: %s", last_err)
         raise HTTPException(502, "Extraction service unavailable")
 
     try:
@@ -66,7 +79,6 @@ def parse(body: ParseIn):
     except (ValidationError, TypeError):
         raise HTTPException(422, "Could not understand, please say it again")
 
-    # Backend safety checks: anything unclear goes to review
     if entry.entry_date is None:
         entry.entry_date = date.today()
         entry.needs_review = True
