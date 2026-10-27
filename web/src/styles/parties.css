@@ -1,7 +1,0 @@
-/* ---------- Parties ---------- */
-.pt-row{display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.9rem 1rem;margin-bottom:.6rem;background:var(--card);border:1px solid var(--line);border-radius:16px}
-.pt-type{font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-left:.4rem}
-.pt-right{display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
-.pt-right b,.pt-row .in,.pt-total .in{color:#1E9E5A}
-.pt-right b.out,.pt-row .out,.pt-total .out{color:#D64545}
-.pt-total{margin:.8rem 0;font-size:1.05rem}
