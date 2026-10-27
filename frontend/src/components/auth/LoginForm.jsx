@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
-import LangSwitch from '@/components/topbar/LangSwitch';
+import { LangSwitch } from '@/components/topbar/TopBar';
 import OtpInput from './OtpInput';
 import { sendOtp, verifyOtp, saveSession, getSession, isDemo } from '@/lib/auth';
 

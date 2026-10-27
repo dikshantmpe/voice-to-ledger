@@ -1,12 +1,81 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
-import NavButtons from './NavButtons';
-import LangSwitch from './LangSwitch';
-import DropMenu from './DropMenu';
+import { LANGS } from '@/lib/i18n';
 import { clearSession } from '@/lib/auth';
 
+// ---- shared nav config (was NavButtons.jsx) ----
+export const VIEWS = [
+  ['home', '⌂', 'nav_home'],
+  ['record', '◉', 'nav_record'],
+  ['review', '▤', 'nav_review'],
+  ['ledger', '≣', 'nav_ledger'],
+  ['parties', '◈', 'nav_parties'],
+];
+
+// ---- top nav row (was NavButtons.jsx) ----
+export function NavButtons({ view, setView }) {
+  const { t, pending } = useApp();
+  return (
+    <nav className="mainnav" id="mainnav">
+      {VIEWS.map(([id, ico, key]) => (
+        <button key={id} className={view === id ? 'active' : ''} onClick={() => setView(id)}>
+          {ico} {t(key)} {id === 'review' && <span className="badge">{pending.length}</span>}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+// ---- bottom nav row (was BottomNav.jsx) ----
+export function BottomNav({ view, setView }) {
+  const { t, pending } = useApp();
+  return (
+    <nav className="bottomnav" id="bottomnav">
+      {VIEWS.map(([id, ico, key]) => (
+        <button key={id} className={view === id ? 'active' : ''} onClick={() => setView(id)}>
+          <span className="bico">{ico}</span>
+          <span>{t(key)}</span>
+          {id === 'review' && <span className="badge">{pending.length}</span>}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+// ---- language switcher (was LangSwitch.jsx) ----
+export function LangSwitch() {
+  const { lang, setLang } = useApp();
+  return (
+    <div className="langswitch" id="langswitch">
+      {LANGS.map((l) => (
+        <button key={l.code} className={lang === l.code ? 'on' : ''} onClick={() => setLang(l.code)}>
+          {l.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ---- small dropdown: trigger + menu that closes on outside click (was DropMenu.jsx) ----
+export function DropMenu({ trigger, className = '', children }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, []);
+  return (
+    <div className={'menuwrap ' + className} ref={ref}>
+      <span onClick={() => setOpen((o) => !o)}>{trigger}</span>
+      <div className={'dropdown' + (open ? ' open' : '')} onClick={() => setOpen(false)}>{children}</div>
+    </div>
+  );
+}
+
+// ---- the top bar itself ----
 export default function TopBar({ view, setView, onSummary, onAssistant }) {
   const router = useRouter();
   const { S, t } = useApp();
