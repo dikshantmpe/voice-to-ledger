@@ -20,7 +20,7 @@ def parse(body: ParseIn):
     if not body.text.strip():
         raise HTTPException(422, "text is empty")
 
-    # Mock mode: PARSE_MOCK=1 in .env returns a fixed sample, no Gemini call
+    # Mock mode: PARSE_MOCK=1 in .env returns a fixed sample, no LLM call
     if os.getenv("PARSE_MOCK") == "1":
         return ParsedEntry(
             entry_date=date.today(), party="Rahul", debit_account="Purchases",
@@ -28,26 +28,28 @@ def parse(body: ParseIn):
             raw_utterance=body.text, confidence=0.9, needs_review=False,
         )
 
-    gemini_key = os.getenv("GEMINI_API_KEY")
-    if not gemini_key:
-        # Fail loudly and clearly: without this the request would go to Google
-        # with key=None and come back as an opaque 502.
-        raise HTTPException(503, "GEMINI_API_KEY not configured on the server")
+    xai_key = os.getenv("XAI_API_KEY")
+    if not xai_key:
+        raise HTTPException(503, "XAI_API_KEY not configured on the server")
 
     try:
         resp = httpx.post(
-            f"https://generativelanguage.googleapis.com/v1beta/models/{os.getenv('GEMINI_MODEL', 'gemini-2.0-flash')}:generateContent",
-            params={"key": gemini_key},
+            "https://api.x.ai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {xai_key}"},
             json={
-                "systemInstruction": {"parts": [{"text": system_prompt()}]},
-                "contents": [{"role": "user", "parts": [{"text": body.text}]}],
-                "generationConfig": {"responseMimeType": "application/json", "temperature": 0},
+                "model": os.getenv("XAI_MODEL", "grok-beta"),
+                "messages": [
+                    {"role": "system", "content": system_prompt()},
+                    {"role": "user", "content": body.text},
+                ],
+                "response_format": {"type": "json_object"},
+                "temperature": 0,
             },
             timeout=60,
         )
         resp.raise_for_status()
-        text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
-        # Gemini can wrap JSON in ```json fences even with responseMimeType set
+        text = resp.json()["choices"][0]["message"]["content"]
+        # Grok can wrap JSON in ```json fences even with response_format set
         text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
         data = json.loads(text)
     except json.JSONDecodeError:
